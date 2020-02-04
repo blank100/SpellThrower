@@ -69,6 +69,8 @@
     <Compile Include="Assets\ErbGameArt\AAA Projectiles Vol 1\Scripts\AutoDestroyPS.cs" />
     <Compile Include="Assets\ErbGameArt\AAA Projectiles Vol 1\Scripts\ParticleCollisionInstance.cs" />
     <Compile Include="Assets\ErbGameArt\AAA Projectiles Vol 1\Scripts\ProjectileMover.cs" />
+    <Compile Include="Assets\ExposerMonstre.cs" />
+    <Compile Include="Assets\ExposerSort.cs" />
     <Compile Include="Assets\GameManager.cs" />
     <Compile Include="Assets\HUD&amp;GUI MEDIEVAL ART BUNDLE\Demo\Scripts\ButtonDisabler.cs" />
     <Compile Include="Assets\HUD&amp;GUI MEDIEVAL ART BUNDLE\Demo\Scripts\ButtonImageOnClick.cs" />
@@ -594,6 +596,7 @@
     <Compile Include="Assets\Oculus\Spatializer\scripts\ONSPPropagationSettings.cs" />
     <Compile Include="Assets\Oculus\Spatializer\scripts\ONSPSettings.cs" />
     <Compile Include="Assets\Oculus\Spatializer\scripts\ONSPVersion.cs" />
+    <Compile Include="Assets\Pooling.cs" />
     <None Include="Assets\LeapMotion\Core\Resources\LeapCG.cginc" />
     <None Include="Assets\Oculus\Avatar\Resources\Materials\Version1.5\Avatar_PC_SingleComponent.shader" />
     <None Include="Assets\Oculus\Avatar\Samples\CrossPlatform\Readme.txt" />

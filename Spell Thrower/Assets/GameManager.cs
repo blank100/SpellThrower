@@ -11,8 +11,9 @@ public struct Level
     [SerializeField] public bool bouleDeFeu;
     [SerializeField] public bool bouleDeLaMort;
     [SerializeField] public bool hadooken;
+    [SerializeField] public bool laser;
     [SerializeField] public int nombreMonstres;
-    [HideInInspector] public bool tousLesSorts;   
+    public bool tousLesSorts;   
 }
 
 public class GameManager : MonoBehaviour
@@ -37,6 +38,12 @@ public class GameManager : MonoBehaviour
     {
         listeNiveaux.Add(niveau1);
         //listeNiveaux.Add(niveau2);
+    }
+
+    //récupérer les pv du joueur
+    public int GetPvJoueur()
+    {
+        return pvJoueur;
     }
 
     //lancer une partie infinie score et sorts dispo
@@ -92,6 +99,10 @@ public class GameManager : MonoBehaviour
             {
                 //ajouter les monstres faibles au hadooken
                 currentMonstresPossibles.Add(monstres[2]);
+            }
+            if(lv.laser)
+            {
+                //ajouter les monstres faibles au laser
             }
         }
         detector.LireConfigNiveau(currentLevel);

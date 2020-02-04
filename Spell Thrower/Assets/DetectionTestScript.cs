@@ -9,6 +9,7 @@ public enum EtatMain
     MAINFERMEE,
     MAINOUVERTE,
     INDEXONLY,
+    ALLBUTTHUMB,
     SORTENCOURS,
     LANCEMENT,
     MAINSPARALLELESY,
@@ -20,6 +21,7 @@ public enum StarterSpell
 {
     SORTINDEX,
     SORTPAUME,
+    SORTDOSMAIN,
     ZERO
 }
 
@@ -33,6 +35,7 @@ public class DetectionTestScript : MonoBehaviour
     [SerializeField] private Transform annulaireMainD;
     [SerializeField] private Transform auriculaireMainD;
     [SerializeField] private Rigidbody rigidbodyMainD;
+    [SerializeField] private Transform viseeD;
 
     [Header ("Composants Main gauche")]
     [SerializeField] private Transform paumeMainG;
@@ -42,14 +45,17 @@ public class DetectionTestScript : MonoBehaviour
     [SerializeField] private Transform annulaireMainG;
     [SerializeField] private Transform auriculaireMainG;
     [SerializeField] private Rigidbody rigidbodyMainG;
+    [SerializeField] private Transform viseeG;
 
     [Header("Offsets Main droite")]
     [SerializeField] private Vector3 offsetPaumeD;
     [SerializeField] private Vector3 offsetIndexD;
+    [SerializeField] private Vector3 offsetDosMainD;
 
     [Header ("Offsets Main gauche")]
     [SerializeField] private Vector3 offsetPaumeG;
     [SerializeField] private Vector3 offsetIndexG;
+    [SerializeField] private Vector3 offsetDosMainG;
 
     [Header("Paramétrage des fourchettes")]
     [SerializeField] private float seuilPouce;
@@ -58,9 +64,10 @@ public class DetectionTestScript : MonoBehaviour
     [SerializeField] private float seuilAnnulaire;
     [SerializeField] private float seuilAuriculaire;
     [SerializeField] private float seuilVitesseLancement;
+    [SerializeField] private float seuilVitesseDepart;
 
-    [Header("Sorts")]
-    [SerializeField] List<GameObject> listeSorts;
+    [Header("Références")]
+    [SerializeField] private Pooling poolingManager;
 
     private Controller controller;
 
@@ -72,8 +79,8 @@ public class DetectionTestScript : MonoBehaviour
     private StarterSpell starterMainD = StarterSpell.ZERO;
     private StarterSpell starterMainG = StarterSpell.ZERO;
 
-    private GameObject currentSpellMainD;
-    private GameObject currentSpellMainG;
+    private ExposerSort currentSpellMainD;
+    private ExposerSort currentSpellMainG;
 
     private Vector3 currentPositionMainD;
     private Vector3 previousPositionMainD;
@@ -89,6 +96,7 @@ public class DetectionTestScript : MonoBehaviour
     private bool bouleDeFeu = false;
     private bool bouleDeLaMort = false;
     private bool hadooken = false;
+    private bool laser = false;
 
     // Start is called before the first frame update
     void Start()
@@ -114,13 +122,15 @@ public class DetectionTestScript : MonoBehaviour
         currentPositionMainD = paumeMainD.transform.position;
 
         previousPositionMainG = currentPositionMainG;
-        currentPositionMainG = paumeMainD.transform.position;
+        currentPositionMainG = paumeMainG.transform.position;
 
-        //velociteMainD = Vector3.Distance(previousPositionMainD, currentPositionMainD) * Time.deltaTime * 100000;
-        //velociteMainG = Vector3.Distance(previousPositionMainG, currentPositionMainG) * Time.deltaTime * 100000;
         var v = currentPositionMainD - previousPositionMainD;
         v /= Time.deltaTime;
         velociteMainD = v.magnitude * 10;
+
+        var v2 = currentPositionMainG - previousPositionMainG;
+        v2 /= Time.deltaTime;
+        velociteMainG = v2.magnitude * 10;
     }
 
     // Update is called once per frame
@@ -136,8 +146,6 @@ public class DetectionTestScript : MonoBehaviour
                 if (main.IsLeft) DetermineEtatMain(false);
                 else DetermineEtatMain(true);
             }
-
-            Debug.Log(currentStateMainD + "---------" + previousStateMainD + "_________" + hadooken);
          
             //gestion des sorts en fonction des états déterminés précédemment
             GestionSort();
@@ -152,12 +160,14 @@ public class DetectionTestScript : MonoBehaviour
             bouleDeFeu = true;
             bouleDeLaMort = true;
             hadooken = true;
+            laser = true;
         }
         else
         {
             bouleDeFeu = lv.bouleDeFeu;
             bouleDeLaMort = lv.bouleDeLaMort;
             hadooken = lv.hadooken;
+            laser = lv.laser;
         }      
     }
 
@@ -205,19 +215,31 @@ public class DetectionTestScript : MonoBehaviour
             switch(starterMainD)
             {
                 case StarterSpell.SORTPAUME:
-                    var rb = currentSpellMainD.GetComponent<Rigidbody>();
+                    var rb = currentSpellMainD.getRigidbody();
                     currentSpellMainD.transform.SetParent(null);
                     rb.isKinematic = false;
-                    rb.AddForce((-paumeMainD.transform.up + new Vector3(0, 0, 0.25f)) * 100, ForceMode.Acceleration);
+                    rb.AddForce(viseeD.right * currentSpellMainD.GetVitesse(), ForceMode.Acceleration);
+                    currentSpellMainD.LancementSort();
                     currentSpellMainD = null;
                     break;
 
                 case StarterSpell.SORTINDEX:
 
-                    var rbindex = currentSpellMainD.GetComponent<Rigidbody>();
+                    var rbindex = currentSpellMainD.getRigidbody();
                     currentSpellMainD.transform.SetParent(null);
                     rbindex.isKinematic = false;
-                    rbindex.AddForce(indexMainD.transform.right * 100, ForceMode.Acceleration);
+                    rbindex.AddForce(indexMainD.transform.right * currentSpellMainD.GetVitesse(), ForceMode.Acceleration);
+                    currentSpellMainD.LancementSort();
+                    currentSpellMainD = null;
+                    break;
+
+                case StarterSpell.SORTDOSMAIN:
+
+                    var rbdos = currentSpellMainD.getRigidbody();
+                    currentSpellMainD.transform.SetParent(null);
+                    rbdos.isKinematic = false;
+                    rbdos.AddForce(paumeMainD.transform.right * currentSpellMainD.GetVitesse(), ForceMode.Acceleration);
+                    currentSpellMainD.LancementSort();
                     currentSpellMainD = null;
                     break;
             }
@@ -228,19 +250,31 @@ public class DetectionTestScript : MonoBehaviour
             switch(starterMainG)
             {
                 case StarterSpell.SORTPAUME:
-                    var rb = currentSpellMainG.GetComponent<Rigidbody>();
+                    var rb = currentSpellMainG.getRigidbody();
                     currentSpellMainG.transform.SetParent(null);
                     rb.isKinematic = false;
-                    rb.AddForce((paumeMainG.transform.up + new Vector3(0, 0, 0.25f)) * 100, ForceMode.Acceleration);
+                    rb.AddForce(-viseeG.right * currentSpellMainG.GetVitesse(), ForceMode.Acceleration);
+                    currentSpellMainG.LancementSort();
                     currentSpellMainG = null;
                     break;
 
                 case StarterSpell.SORTINDEX:
 
-                    var rbindex = currentSpellMainG.GetComponent<Rigidbody>();
+                    var rbindex = currentSpellMainG.getRigidbody();
                     currentSpellMainG.transform.SetParent(null);
                     rbindex.isKinematic = false;
-                    rbindex.AddForce(indexMainG.transform.up * 100, ForceMode.Acceleration);
+                    rbindex.AddForce(-indexMainG.transform.right * currentSpellMainG.GetVitesse(), ForceMode.Acceleration);
+                    currentSpellMainG.LancementSort();
+                    currentSpellMainG = null;
+                    break;
+
+                case StarterSpell.SORTDOSMAIN:
+
+                    var rbdos = currentSpellMainG.getRigidbody();
+                    currentSpellMainG.transform.SetParent(null);
+                    rbdos.isKinematic = false;
+                    rbdos.AddForce(-paumeMainG.transform.right * currentSpellMainG.GetVitesse(), ForceMode.Acceleration);
+                    currentSpellMainG.LancementSort();
                     currentSpellMainG = null;
                     break;
             }
@@ -250,6 +284,7 @@ public class DetectionTestScript : MonoBehaviour
     //fonction pour déterminer l'état de la main
     public void DetermineEtatMain(bool droit)
     {
+        //déterminer si les mains sont parallèles et ouvertes
         if((mainParalleles || mainParallelesGauche) && currentStateMainD == EtatMain.MAINOUVERTE && currentStateMainG == EtatMain.MAINOUVERTE)
         {
             previousStateMainD = currentStateMainD;
@@ -265,7 +300,7 @@ public class DetectionTestScript : MonoBehaviour
         {
             if(currentStateMainD == EtatMain.LANCEMENT)
             {
-                if (velociteMainD < seuilVitesseLancement)
+                if (velociteMainD < seuilVitesseDepart)
                 {
                     LancerSort(true);
                     previousStateMainD = currentStateMainD;
@@ -297,7 +332,7 @@ public class DetectionTestScript : MonoBehaviour
                     if (listeDistance[0] < seuilPouce && listeDistance[1] > seuilIndex && listeDistance[2] < seuilMajeur && listeDistance[3] < seuilAnnulaire && listeDistance[4] < seuilAuriculaire)
                     {
                         //si la main est fermée suite à une annulation, l'état ne change pas
-                        if (currentStateMainD == EtatMain.ANNULATION && previousStateMainD == EtatMain.ANNULATION) return;
+                        if (currentStateMainD == EtatMain.ANNULATION && (previousStateMainD == EtatMain.ANNULATION || previousStateMainD == EtatMain.SORTENCOURS)) return;
 
                         previousStateMainD = currentStateMainD;
                         currentStateMainD = EtatMain.INDEXONLY;
@@ -308,7 +343,7 @@ public class DetectionTestScript : MonoBehaviour
                         if (listeDistance[0] < seuilPouce && listeDistance[1] < seuilIndex && listeDistance[2] < seuilMajeur && listeDistance[3] < seuilAnnulaire && listeDistance[4] < seuilAuriculaire)
                         {
                             //si la main est fermée suite à une annulation, l'état ne change pas
-                            if (currentStateMainD == EtatMain.ANNULATION && previousStateMainD == EtatMain.ANNULATION) return;
+                            if (currentStateMainD == EtatMain.ANNULATION && (previousStateMainD == EtatMain.ANNULATION || previousStateMainD == EtatMain.SORTENCOURS)) return;
 
                             previousStateMainD = currentStateMainD;
                             currentStateMainD = EtatMain.MAINFERMEE;
@@ -316,10 +351,21 @@ public class DetectionTestScript : MonoBehaviour
                         }
                         else
                         {
-                            //par défaut la main est ouverte
-                            previousStateMainD = currentStateMainD;
-                            currentStateMainD = EtatMain.MAINOUVERTE;
-                            return;
+                            if(listeDistance[0] < seuilPouce && listeDistance[1] > seuilIndex && listeDistance[2] > seuilMajeur && listeDistance[3] > seuilAnnulaire && listeDistance[4] > seuilAuriculaire)
+                            {
+                                if (currentStateMainD == EtatMain.ANNULATION && (previousStateMainD == EtatMain.ANNULATION || previousStateMainD == EtatMain.SORTENCOURS)) return;
+
+                                previousStateMainD = currentStateMainD;
+                                currentStateMainD = EtatMain.ALLBUTTHUMB;
+                                return;
+                            }
+                            else
+                            {
+                                //par défaut la main est ouverte
+                                previousStateMainD = currentStateMainD;
+                                currentStateMainD = EtatMain.MAINOUVERTE;
+                                return;
+                            }
                         }
                     }
                 }
@@ -354,7 +400,7 @@ public class DetectionTestScript : MonoBehaviour
         {
             if (currentStateMainG == EtatMain.LANCEMENT)
             {
-                if (velociteMainG < seuilVitesseLancement)
+                if (velociteMainG < seuilVitesseDepart)
                 {
                     LancerSort(false);
                     previousStateMainG = currentStateMainG;
@@ -386,6 +432,8 @@ public class DetectionTestScript : MonoBehaviour
                 {
                     if (listeDistance[0] < seuilPouce && listeDistance[1] > seuilIndex && listeDistance[2] < seuilMajeur && listeDistance[3] < seuilAnnulaire && listeDistance[4] < seuilAuriculaire)
                     {
+                        if (currentStateMainG == EtatMain.ANNULATION && (previousStateMainG == EtatMain.ANNULATION || previousStateMainG == EtatMain.SORTENCOURS)) return;
+
                         previousStateMainG = currentStateMainG;
                         currentStateMainG = EtatMain.INDEXONLY;
                         return;
@@ -394,7 +442,7 @@ public class DetectionTestScript : MonoBehaviour
                     {
                         if (listeDistance[0] < seuilPouce && listeDistance[1] < seuilIndex && listeDistance[2] < seuilMajeur && listeDistance[3] < seuilAnnulaire && listeDistance[4] < seuilAuriculaire)
                         {
-                            if (currentStateMainG == EtatMain.ANNULATION && previousStateMainG == EtatMain.ANNULATION) return;
+                            if (currentStateMainG == EtatMain.ANNULATION && (previousStateMainG == EtatMain.ANNULATION || previousStateMainG == EtatMain.SORTENCOURS)) return;
 
                             previousStateMainG = currentStateMainG;
                             currentStateMainG = EtatMain.MAINFERMEE;
@@ -402,10 +450,22 @@ public class DetectionTestScript : MonoBehaviour
                         }
                         else
                         {
-                            //par défaut la main est ouverte
-                            previousStateMainG = currentStateMainG;
-                            currentStateMainG = EtatMain.MAINOUVERTE;
-                            return;
+                            if(listeDistance[0] < seuilPouce && listeDistance[1] > seuilIndex && listeDistance[2] > seuilMajeur && listeDistance[3] > seuilAnnulaire && listeDistance[4] > seuilAuriculaire)
+                            {
+                                if (currentStateMainG == EtatMain.ANNULATION && (previousStateMainG == EtatMain.ANNULATION || previousStateMainG == EtatMain.SORTENCOURS)) return;
+
+                                previousStateMainG = currentStateMainG;
+                                currentStateMainG = EtatMain.ALLBUTTHUMB;
+                                return;
+                            }
+
+                            else
+                            {
+                                //par défaut la main est ouverte
+                                previousStateMainG = currentStateMainG;
+                                currentStateMainG = EtatMain.MAINOUVERTE;
+                                return;
+                            }
                         }
                     }
                 }
@@ -429,7 +489,7 @@ public class DetectionTestScript : MonoBehaviour
                 }
 
                 //si on dépasse une certaine vélocité, on passe en lancement
-                if (velociteMainG > 1f)
+                if (velociteMainG > seuilVitesseLancement)
                 {
                     previousStateMainG = currentStateMainG;
                     currentStateMainG = EtatMain.LANCEMENT;
@@ -443,13 +503,13 @@ public class DetectionTestScript : MonoBehaviour
     {
         if(currentStateMainD == EtatMain.ANNULATION)
         {
-            if(currentSpellMainD != null) Destroy(currentSpellMainD);
+            if(currentSpellMainD != null) currentSpellMainD.AnnulationSort();
             return;
         }
 
         if(currentStateMainG == EtatMain.ANNULATION)
         {
-            if(currentSpellMainG != null) Destroy(currentSpellMainG);
+            if(currentSpellMainG != null) currentSpellMainG.AnnulationSort();
             return;
         }
 
@@ -459,11 +519,8 @@ public class DetectionTestScript : MonoBehaviour
             if(mainParalleles && hadooken)
             {
                 //instancier le sort dans la main droite
-                var sort = Instantiate<GameObject>(listeSorts[2]);
-                sort.transform.SetParent(paumeMainD);
-                sort.transform.localPosition = Vector3.zero + offsetPaumeD;
-                sort.transform.localRotation = new Quaternion(0, 0, 0, 0);
-                currentSpellMainD = sort;
+                currentSpellMainD = poolingManager.Incantation(Sort.HADOOKEN, paumeMainD, offsetPaumeD);
+                currentSpellMainD.Incantation();
                 starterMainD = StarterSpell.SORTPAUME;
                 currentStateMainD = EtatMain.SORTENCOURS;
             }
@@ -472,11 +529,8 @@ public class DetectionTestScript : MonoBehaviour
                 if(mainParallelesGauche && hadooken)
                 {
                     //instancier le sort dans la main gauche
-                    var sort = Instantiate<GameObject>(listeSorts[2]);
-                    sort.transform.SetParent(paumeMainG);
-                    sort.transform.localPosition = Vector3.zero + offsetPaumeG;
-                    sort.transform.localRotation = new Quaternion(0, 0, 0, 0);
-                    currentSpellMainG = sort;
+                    currentSpellMainG = poolingManager.Incantation(Sort.HADOOKEN, paumeMainG, offsetPaumeG);
+                    currentSpellMainG.Incantation();
                     starterMainG = StarterSpell.SORTPAUME;
                     currentStateMainG = EtatMain.SORTENCOURS;
                 }
@@ -488,12 +542,9 @@ public class DetectionTestScript : MonoBehaviour
         if(currentStateMainD == EtatMain.MAINOUVERTE && previousStateMainD == EtatMain.MAINFERMEE && bouleDeFeu)
         {
             //instancier le sort dans la main droite
+            currentSpellMainD = poolingManager.Incantation(Sort.BOULEDEFEU, paumeMainD, offsetPaumeD);
+            currentSpellMainD.Incantation();
             currentStateMainD = EtatMain.SORTENCOURS;
-            var sort = Instantiate<GameObject>(listeSorts[0]);
-            sort.transform.SetParent(paumeMainD);
-            sort.transform.localPosition = Vector3.zero + offsetPaumeD;
-            sort.transform.localRotation = new Quaternion(0, 0, 0, 0);
-            currentSpellMainD = sort;
             starterMainD = StarterSpell.SORTPAUME;
         }
         else
@@ -501,13 +552,20 @@ public class DetectionTestScript : MonoBehaviour
             if(currentStateMainD == EtatMain.INDEXONLY && (previousStateMainD == EtatMain.MAINOUVERTE || previousStateMainD == EtatMain.MAINFERMEE) && bouleDeLaMort)
             {
                 //instancier le sort dans la main droite
+                currentSpellMainD = poolingManager.Incantation(Sort.BOULEDELAMORT, indexMainD, offsetIndexD);
+                currentSpellMainD.Incantation();
                 currentStateMainD = EtatMain.SORTENCOURS;
-                var sort = Instantiate<GameObject>(listeSorts[1]);
-                sort.transform.SetParent(indexMainD);
-                sort.transform.localPosition = Vector3.zero + offsetIndexD;
-                sort.transform.localRotation = new Quaternion(0, 0, 0, 0);
-                currentSpellMainD = sort;
                 starterMainD = StarterSpell.SORTINDEX;
+            }
+            else
+            {
+                if(currentStateMainD == EtatMain.ALLBUTTHUMB && (previousStateMainD == EtatMain.MAINOUVERTE || previousStateMainD == EtatMain.MAINFERMEE))
+                {
+                    currentSpellMainD = poolingManager.Incantation(Sort.LASER, paumeMainD, offsetDosMainD);
+                    currentSpellMainD.Incantation();
+                    currentStateMainD = EtatMain.SORTENCOURS;
+                    starterMainD = StarterSpell.SORTDOSMAIN;
+                }
             }
         }
 
@@ -515,11 +573,9 @@ public class DetectionTestScript : MonoBehaviour
         if(currentStateMainG == EtatMain.MAINOUVERTE && previousStateMainG == EtatMain.MAINFERMEE && bouleDeFeu)
         {
             //instancier le sort dans la main gauche
+            currentSpellMainG = poolingManager.Incantation(Sort.BOULEDEFEU, paumeMainG, offsetPaumeG);
+            currentSpellMainG.Incantation();
             currentStateMainG = EtatMain.SORTENCOURS;
-            var sort = Instantiate<GameObject>(listeSorts[0]);
-            sort.transform.SetParent(paumeMainG);
-            sort.transform.localPosition = offsetPaumeG;
-            currentSpellMainG = sort;
             starterMainG = StarterSpell.SORTPAUME;
         }
         else
@@ -527,13 +583,20 @@ public class DetectionTestScript : MonoBehaviour
             if (currentStateMainG == EtatMain.INDEXONLY && (previousStateMainG == EtatMain.MAINOUVERTE || previousStateMainG == EtatMain.MAINFERMEE) && bouleDeLaMort)
             {
                 //instancier le sort dans la main gauche
+                currentSpellMainG = poolingManager.Incantation(Sort.BOULEDELAMORT, indexMainG, offsetIndexG);
+                currentSpellMainG.Incantation();
                 currentStateMainG = EtatMain.SORTENCOURS;
-                var sort = Instantiate<GameObject>(listeSorts[1]);
-                sort.transform.SetParent(indexMainG);
-                sort.transform.localPosition = Vector3.zero + offsetIndexG;
-                sort.transform.localRotation = new Quaternion(0, 0, 0, 0);
-                currentSpellMainG = sort;
                 starterMainG = StarterSpell.SORTINDEX;
+            }
+            else
+            {
+                if (currentStateMainG == EtatMain.ALLBUTTHUMB && (previousStateMainG == EtatMain.MAINOUVERTE || previousStateMainG == EtatMain.MAINFERMEE))
+                {
+                    currentSpellMainG = poolingManager.Incantation(Sort.LASER, paumeMainG, offsetDosMainG);
+                    currentSpellMainG.Incantation();
+                    currentStateMainG = EtatMain.SORTENCOURS;
+                    starterMainG = StarterSpell.SORTDOSMAIN;
+                }
             }
         }
     }

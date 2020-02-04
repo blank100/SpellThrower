@@ -9653,6 +9653,7 @@ GameObject:
   - component: {fileID: 199470418353522432}
   - component: {fileID: 54447856582251616}
   - component: {fileID: 135543802754298092}
+  - component: {fileID: 9087225915492041650}
   m_Layer: 8
   m_Name: YogaFeuEX
   m_TagString: Untagged
@@ -9867,7 +9868,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0, g: 0.12997723, b: 1, a: 0.8235294}
+      maxColor: {r: 0.6320754, g: 0.23778671, b: 0, a: 0.8235294}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -14494,6 +14495,26 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.2
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &9087225915492041650
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1603989468733260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0929e1176d6363439dee5969b75434d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dureeDeVie: 3
+  sortTransform: {fileID: 4584415724192722}
+  sortRigidbody: {fileID: 54447856582251616}
+  sortCollider: {fileID: 135543802754298092}
+  vitesse: 300
+  bouleDeFeu: 1
+  bouleDeLaMort: 0
+  hadooken: 0
 --- !u!1 &1835535820164480
 GameObject:
   m_ObjectHideFlags: 0

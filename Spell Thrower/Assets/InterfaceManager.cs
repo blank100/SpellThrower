@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using System.Text;
 using System;
 
@@ -36,6 +37,7 @@ public class InterfaceManager : MonoBehaviour
     [SerializeField] private GameManager gameManager;
 
     private StateInterface currentState = StateInterface.ONMAINMENU;
+    private int pvjoueur;
 
     //EVENTS
     public event Action clickJouer;
@@ -57,6 +59,34 @@ public class InterfaceManager : MonoBehaviour
         detector.gameObject.SetActive(false);
     }
 
+    private void Update()
+    {
+        //si le joueur a perdu un pv
+        if(pvjoueur > gameManager.GetPvJoueur())
+        {
+            pvjoueur = gameManager.GetPvJoueur();
+            UpdateInterfacePV();
+        }
+    }
+
+    //mettre à jour les PV du joueur sur l'interface
+    private void UpdateInterfacePV()
+    {
+        switch(pvjoueur)
+        {
+            case 2:
+                pv3.color = Color.white;
+                break;
+            case 1:
+                pv2.color = Color.white;
+                break;
+            case 0:
+                pv1.color = Color.white;
+                RetourMenu();
+                break;
+        }
+    }
+
     //afficher les boutons pour choisir le type de partie
     public void AfficherMenuChoix()
     {
@@ -65,6 +95,12 @@ public class InterfaceManager : MonoBehaviour
 
         boutonStory.gameObject.SetActive(true);
         boutonInfinite.gameObject.SetActive(true);
+    }
+
+    //reload du jeu au retour au menu
+    public void RetourMenu()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name, LoadSceneMode.Single);
     }
 
     //fermer le jeu
@@ -84,6 +120,7 @@ public class InterfaceManager : MonoBehaviour
 
         menuPrincipal.gameObject.SetActive(false);
         score.gameObject.SetActive(false);
+        interfaceInGame.gameObject.SetActive(true);
 
         detector.gameObject.SetActive(true);
 
@@ -101,6 +138,7 @@ public class InterfaceManager : MonoBehaviour
 
         menuPrincipal.gameObject.SetActive(false);
         score.gameObject.SetActive(true);
+        interfaceInGame.gameObject.SetActive(true);
 
         detector.gameObject.SetActive(true);
 

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4813750126601536}
   - component: {fileID: 198059696973432114}
   - component: {fileID: 199147082256883192}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Lightning
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4831,7 +4831,7 @@ GameObject:
   - component: {fileID: 4288798131609954}
   - component: {fileID: 198382008552040118}
   - component: {fileID: 199724920795497730}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Shine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9652,7 +9652,7 @@ GameObject:
   - component: {fileID: 198356835336850064}
   - component: {fileID: 199548262001964682}
   - component: {fileID: 108555376458191456}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Glow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14534,7 +14534,8 @@ GameObject:
   - component: {fileID: 199622684974115234}
   - component: {fileID: 54078151922935178}
   - component: {fileID: 135537387491394736}
-  m_Layer: 0
+  - component: {fileID: 853965288429416143}
+  m_Layer: 8
   m_Name: Hadouken
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19376,6 +19377,27 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.2
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &853965288429416143
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1531814124222292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0929e1176d6363439dee5969b75434d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dureeDeVie: 3
+  sortTransform: {fileID: 4215891199679236}
+  sortRigidbody: {fileID: 54078151922935178}
+  sortCollider: {fileID: 135537387491394736}
+  vitesse: 200
+  bouleDeFeu: 0
+  bouleDeLaMort: 0
+  hadooken: 1
+  laser: 0
 --- !u!1 &1548625300088820
 GameObject:
   m_ObjectHideFlags: 0
@@ -19387,7 +19409,7 @@ GameObject:
   - component: {fileID: 4738946355987080}
   - component: {fileID: 198149117270932434}
   - component: {fileID: 199240653785539914}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Wind
   m_TagString: Untagged
   m_Icon: {fileID: 0}

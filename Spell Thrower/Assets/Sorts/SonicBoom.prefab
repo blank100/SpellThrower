@@ -14,7 +14,8 @@ GameObject:
   - component: {fileID: 108266483201387004}
   - component: {fileID: 54034537497690522}
   - component: {fileID: 135187156854092900}
-  m_Layer: 0
+  - component: {fileID: 7498881125758057316}
+  m_Layer: 8
   m_Name: SonicBoom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4907,6 +4908,27 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.2
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7498881125758057316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1032096471364102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0929e1176d6363439dee5969b75434d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dureeDeVie: 3
+  sortTransform: {fileID: 4245338083937082}
+  sortRigidbody: {fileID: 54034537497690522}
+  sortCollider: {fileID: 135187156854092900}
+  vitesse: 350
+  bouleDeFeu: 0
+  bouleDeLaMort: 1
+  hadooken: 0
+  laser: 0
 --- !u!1 &1352871303294362
 GameObject:
   m_ObjectHideFlags: 0
@@ -4918,7 +4940,7 @@ GameObject:
   - component: {fileID: 4366912051360190}
   - component: {fileID: 198692940710500382}
   - component: {fileID: 199205060469912400}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Electricy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9672,7 +9694,7 @@ GameObject:
   - component: {fileID: 198559730701285930}
   - component: {fileID: 114963004765172870}
   - component: {fileID: 199307829787777340}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Sparks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14437,7 +14459,7 @@ GameObject:
   - component: {fileID: 4106549369329498}
   - component: {fileID: 198194833413760700}
   - component: {fileID: 199193693930752760}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: ElectroCore
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19249,7 +19271,7 @@ GameObject:
   - component: {fileID: 8051946821746886955}
   - component: {fileID: 1098857135207183317}
   - component: {fileID: 1142035222184580218}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Glow
   m_TagString: Untagged
   m_Icon: {fileID: 0}

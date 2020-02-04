@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public enum TypeBouton
 {
     PLAY,
     QUITTER,
+    RETOURMENU,
     STORY,
     INFINITE
 }
@@ -31,6 +33,15 @@ public class BoutonClickDetection : MonoBehaviour
 
                     //fermer le jeu
                     manager.Quitter();
+                    break;
+
+                case TypeBouton.RETOURMENU:
+
+                    //recharger le jeu
+                    if(other.name == "L_index_end")
+                    {
+                        manager.RetourMenu();
+                    }
                     break;
 
                 case TypeBouton.STORY:
