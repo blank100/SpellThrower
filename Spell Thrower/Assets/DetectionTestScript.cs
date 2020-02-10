@@ -14,7 +14,8 @@ public enum EtatMain
     LANCEMENT,
     MAINSPARALLELESY,
     MAINSPARALLELESX,
-    ANNULATION
+    ANNULATION,
+    PERDUE
 }
 
 public enum StarterSpell
@@ -90,13 +91,14 @@ public class DetectionTestScript : MonoBehaviour
 
     private float velociteMainD;
     private float velociteMainG;
+    private int nbMainsDetectees;
 
     private bool mainParalleles = false;
     private bool mainParallelesGauche = false;
-    private bool bouleDeFeu = false;
-    private bool bouleDeLaMort = false;
-    private bool hadooken = false;
-    private bool laser = false;
+    private bool bouleDeFeu = true;
+    private bool bouleDeLaMort = true;
+    private bool hadooken = true;
+    private bool laser = true;
 
     // Start is called before the first frame update
     void Start()
@@ -116,7 +118,8 @@ public class DetectionTestScript : MonoBehaviour
         previousPositionMainG = currentPositionMainG;
     }
 
-    private void FixedUpdate()
+    // Update is called once per frame
+    void Update()
     {
         previousPositionMainD = currentPositionMainD;
         currentPositionMainD = paumeMainD.transform.position;
@@ -131,25 +134,64 @@ public class DetectionTestScript : MonoBehaviour
         var v2 = currentPositionMainG - previousPositionMainG;
         v2 /= Time.deltaTime;
         velociteMainG = v2.magnitude * 10;
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
         Frame currentFrame = controller.Frame();
+
+        nbMainsDetectees = currentFrame.Hands.Count;
+
+        if (currentFrame.Hands.Count < 2)
+        {
+            if(currentFrame.Hands.Count == 0)
+            {
+                currentStateMainG = EtatMain.PERDUE;
+                previousStateMainG = EtatMain.PERDUE;
+                if (currentSpellMainG != null) currentSpellMainG.AnnulationSort();
+                currentSpellMainG = null;
+
+                currentStateMainD = EtatMain.PERDUE;
+                previousStateMainD = EtatMain.PERDUE;
+                if (currentSpellMainD != null) currentSpellMainD.AnnulationSort();
+                currentSpellMainD = null;
+            }
+            else
+            {
+                if (currentFrame.Hands[0].IsRight)
+                {
+                    currentStateMainG = EtatMain.PERDUE;
+                    previousStateMainG = EtatMain.PERDUE;
+                    if (currentSpellMainG != null) currentSpellMainG.AnnulationSort();
+                    currentSpellMainG = null;
+                }
+                else
+                {
+                    currentStateMainD = EtatMain.PERDUE;
+                    previousStateMainD = EtatMain.PERDUE;
+                    if (currentSpellMainD != null) currentSpellMainD.AnnulationSort();
+                    currentSpellMainD = null;
+                }
+            }
+            
+        }
 
         //si on a au moins une main de détectée
         if (currentFrame.Hands.Count > 0)
         {
+            
             foreach(var main in currentFrame.Hands)
             {
-                if (main.IsLeft) DetermineEtatMain(false);
-                else DetermineEtatMain(true);
+                if (main.IsRight) DetermineEtatMain(true);
+                else DetermineEtatMain(false);
             }
-         
+
             //gestion des sorts en fonction des états déterminés précédemment
             GestionSort();
         }
+    }
+
+    //récupérer le nombre de mains actuellement détectées
+    public int getNbMainsDetectees()
+    {
+        return nbMainsDetectees;
     }
 
     //Appliquer les changements du niveau courant
@@ -169,21 +211,6 @@ public class DetectionTestScript : MonoBehaviour
             hadooken = lv.hadooken;
             laser = lv.laser;
         }      
-    }
-
-    //fonction pour remettre une main à l'état de départ quand celle-ci est perdue par le tracking
-    public void ResetEtatMain(bool droit)
-    {
-        if(droit)
-        {
-            currentStateMainD = EtatMain.MAINOUVERTE;
-            previousStateMainD = EtatMain.MAINOUVERTE;
-        }
-        else
-        {
-            currentStateMainG = EtatMain.MAINOUVERTE;
-            previousStateMainG = EtatMain.MAINOUVERTE;
-        }
     }
 
     //fonction pour indiquer que les mains sont parallèles avec la main droite en bas
@@ -300,7 +327,7 @@ public class DetectionTestScript : MonoBehaviour
         {
             if(currentStateMainD == EtatMain.LANCEMENT)
             {
-                if (velociteMainD < seuilVitesseDepart)
+                if (velociteMainD < seuilVitesseLancement)
                 {
                     LancerSort(true);
                     previousStateMainD = currentStateMainD;
@@ -535,6 +562,8 @@ public class DetectionTestScript : MonoBehaviour
                     currentStateMainG = EtatMain.SORTENCOURS;
                 }
             }
+            mainParalleles = false;
+            mainParallelesGauche = false;
             return;
         }
 
@@ -559,7 +588,7 @@ public class DetectionTestScript : MonoBehaviour
             }
             else
             {
-                if(currentStateMainD == EtatMain.ALLBUTTHUMB && (previousStateMainD == EtatMain.MAINOUVERTE || previousStateMainD == EtatMain.MAINFERMEE))
+                if(currentStateMainD == EtatMain.ALLBUTTHUMB && (previousStateMainD == EtatMain.MAINOUVERTE || previousStateMainD == EtatMain.MAINFERMEE) && laser)
                 {
                     currentSpellMainD = poolingManager.Incantation(Sort.LASER, paumeMainD, offsetDosMainD);
                     currentSpellMainD.Incantation();
@@ -590,7 +619,7 @@ public class DetectionTestScript : MonoBehaviour
             }
             else
             {
-                if (currentStateMainG == EtatMain.ALLBUTTHUMB && (previousStateMainG == EtatMain.MAINOUVERTE || previousStateMainG == EtatMain.MAINFERMEE))
+                if (currentStateMainG == EtatMain.ALLBUTTHUMB && (previousStateMainG == EtatMain.MAINOUVERTE || previousStateMainG == EtatMain.MAINFERMEE) && laser)
                 {
                     currentSpellMainG = poolingManager.Incantation(Sort.LASER, paumeMainG, offsetDosMainG);
                     currentSpellMainG.Incantation();

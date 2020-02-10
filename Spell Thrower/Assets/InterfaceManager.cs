@@ -35,9 +35,10 @@ public class InterfaceManager : MonoBehaviour
     [Header("Références")]
     [SerializeField] private DetectionTestScript detector;
     [SerializeField] private GameManager gameManager;
+    [SerializeField] private GameObject tuto;
 
     private StateInterface currentState = StateInterface.ONMAINMENU;
-    private int pvjoueur;
+    private int pvjoueur = 3;
 
     //EVENTS
     public event Action clickJouer;
@@ -124,6 +125,8 @@ public class InterfaceManager : MonoBehaviour
 
         detector.gameObject.SetActive(true);
 
+        tuto.SetActive(false);
+
         gameManager.StartStory();
     }
 
@@ -142,6 +145,14 @@ public class InterfaceManager : MonoBehaviour
 
         detector.gameObject.SetActive(true);
 
+        tuto.SetActive(false);
+
         gameManager.StartInfinite();
+    }
+
+    //mettre à jour le score
+    public void UpdateScore(int s)
+    {
+        score.text = "Score : " + s;
     }
 }

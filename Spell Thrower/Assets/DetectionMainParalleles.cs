@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Leap;
+using LeapInternal;
 
 public class DetectionMainParalleles : MonoBehaviour
 {
@@ -8,16 +10,19 @@ public class DetectionMainParalleles : MonoBehaviour
     [SerializeField] private GameObject mainD;
     [SerializeField] private GameObject mainG;
 
+    private int nbMainsDetectees = 0;
+
     private void OnTriggerEnter(Collider other)
     {
-        if(transform.up.y > 0.5)
+        if (nbMainsDetectees < 2) return;
+
+        if(transform.up.y > 0.8)
         {
             //si le collider est l'autre main alors les mains sont parallèles main gauche vers le bas
             if (other.gameObject.layer == 9 && other.transform.up.y > 0)
             {
                 if(mainD.activeSelf && mainG.activeSelf)
                 {
-                    Debug.Log("TRIGGERED GAUCHE EN BAS");
                     detectionScript.SetMainParallelesGauche(true);
                 }
             }
@@ -25,11 +30,10 @@ public class DetectionMainParalleles : MonoBehaviour
         else
         {
             //si le collider est l'autre main alors les mains sont parallèles mais droite vers le bas
-            if (other.gameObject.layer == 9 && other.transform.up.y < -0.5)
+            if (other.gameObject.layer == 9 && other.transform.up.y < -0.8)
             {
                 if (mainD.activeSelf && mainG.activeSelf)
                 {
-                    Debug.Log("TRIGGERED DROITE EN BAS");
                     detectionScript.SetMainParalleles(true);
                 }
             }
@@ -43,5 +47,10 @@ public class DetectionMainParalleles : MonoBehaviour
         {
             detectionScript.ResetMainsParalleles();
         }
+    }
+
+    private void FixedUpdate()
+    {
+        nbMainsDetectees = detectionScript.getNbMainsDetectees();
     }
 }

@@ -4856,11 +4856,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0929e1176d6363439dee5969b75434d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dureeDeVie: 2
+  dureeDeVie: 3
   sortTransform: {fileID: 4138199638266342}
   sortRigidbody: {fileID: 54658278324102420}
   sortCollider: {fileID: 2912640548024844981}
-  vitesse: 600
+  vitesse: 800
   bouleDeFeu: 0
   bouleDeLaMort: 0
   hadooken: 0

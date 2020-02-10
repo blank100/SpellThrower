@@ -27,6 +27,9 @@ public class Pooling : MonoBehaviour
     [SerializeField] private Vector3 positionInstantiate;
     [SerializeField] private Vector3 positionInstantiateMonstres;
 
+    [Header("Références")]
+    [SerializeField] private GameManager gameManager;
+
     //pooling des sorts
     private Queue<ExposerSort> boulesDeFeuDispo = new Queue<ExposerSort>();
     private List<ExposerSort> boulesDeFeuLancees = new List<ExposerSort>();
@@ -113,6 +116,7 @@ public class Pooling : MonoBehaviour
             s = Instantiate<GameObject>(monstreFeu);
             var exposer = s.GetComponent<ExposerMonstre>();
             s.transform.position = positionInstantiateMonstres;
+            exposer.SetGameManager(gameManager);
 
             //désactiver le gameobject et le placer dans la queue
             exposer.DesactivationMonstre();
@@ -125,6 +129,7 @@ public class Pooling : MonoBehaviour
             s = Instantiate<GameObject>(monstreMort);
             var exposer = s.GetComponent<ExposerMonstre>();
             s.transform.position = positionInstantiateMonstres;
+            exposer.SetGameManager(gameManager);
 
             //désactiver le gameobject et le placer dans la queue
             exposer.DesactivationMonstre();
@@ -137,6 +142,7 @@ public class Pooling : MonoBehaviour
             s = Instantiate<GameObject>(monstreHadooken);
             var exposer = s.GetComponent<ExposerMonstre>();
             s.transform.position = positionInstantiateMonstres;
+            exposer.SetGameManager(gameManager);
 
             //désactiver le gameobject et le placer dans la queue
             exposer.DesactivationMonstre();
@@ -149,6 +155,7 @@ public class Pooling : MonoBehaviour
             s = Instantiate<GameObject>(monstreLaser);
             var exposer = s.GetComponent<ExposerMonstre>();
             s.transform.position = positionInstantiateMonstres;
+            exposer.SetGameManager(gameManager);
 
             //désactiver le gameobject et le placer dans la queue
             exposer.DesactivationMonstre();
@@ -195,6 +202,7 @@ public class Pooling : MonoBehaviour
         else return null;
     }
 
+    //retirer un laser du pooling
     public ExposerSort getLaser()
     {
         if (lasersDispo.Count > 0)
@@ -203,6 +211,70 @@ public class Pooling : MonoBehaviour
             s.ActivationSort();
 
             return s;
+        }
+        else return null;
+    }
+
+    //retirer un monstre feu du pooling
+    public ExposerMonstre getMonstreFeu(Vector3 cible, Vector3 positionDepart)
+    {
+        if (monstresFeuDispo.Count > 0)
+        {
+            var m = monstresFeuDispo.Dequeue();
+            m.transform.position = positionDepart;
+            monstresFeuLances.Add(m);
+            m.ActivationMonstre();
+            m.SetCible(cible);
+
+            return m;
+        }
+        else return null;
+    }
+
+    //retirer un monstre mort du pooling
+    public ExposerMonstre getMonstreMort(Vector3 cible, Vector3 positionDepart)
+    {
+        if (monstresMortDispo.Count > 0)
+        {
+            var m = monstresMortDispo.Dequeue();
+            m.transform.position = positionDepart;
+            monstresMortLances.Add(m);
+            m.ActivationMonstre();
+            m.SetCible(cible);
+
+            return m;
+        }
+        else return null;
+    }
+
+    //retirer un monstre Hadooken du pooling
+    public ExposerMonstre getMonstreHadooken(Vector3 cible, Vector3 positionDepart)
+    {
+        if (monstresHadookenDispo.Count > 0)
+        {
+            var m = monstresHadookenDispo.Dequeue();
+            m.transform.position = positionDepart;
+            monstresHadookenLances.Add(m);
+            m.ActivationMonstre();
+            m.SetCible(cible);
+
+            return m;
+        }
+        else return null;
+    }
+
+    //retirer un monstre Laser du pooling
+    public ExposerMonstre getMonstreLaser(Vector3 cible, Vector3 positionDepart)
+    {
+        if (monstresLaserDispo.Count > 0)
+        {
+            var m = monstresLaserDispo.Dequeue();
+            m.transform.position = positionDepart;
+            monstresLaserLances.Add(m);
+            m.ActivationMonstre();
+            m.SetCible(cible);
+
+            return m;
         }
         else return null;
     }
@@ -271,6 +343,42 @@ public class Pooling : MonoBehaviour
                         monstresLaserDispo.Enqueue(m);
                     }
                 }
+            }
+        }
+    }
+
+    //reset du pooling des monstres
+    public void ResetPoolingMonstres()
+    {
+        for(int i = 0; i < monstresFeuLances.Count; i++)
+        {
+            if(monstresFeuLances[i].GetEtatMonstre() == EtatMonstre.ENMARCHE)
+            {
+                monstresFeuLances[i].SetEtatMonstre(EtatMonstre.MORT);
+            }
+        }
+
+        for (int i = 0; i < monstresMortLances.Count; i++)
+        {
+            if (monstresMortLances[i].GetEtatMonstre() == EtatMonstre.ENMARCHE)
+            {
+                monstresMortLances[i].SetEtatMonstre(EtatMonstre.MORT);
+            }
+        }
+
+        for (int i = 0; i < monstresHadookenLances.Count; i++)
+        {
+            if (monstresHadookenLances[i].GetEtatMonstre() == EtatMonstre.ENMARCHE)
+            {
+                monstresHadookenLances[i].SetEtatMonstre(EtatMonstre.MORT);
+            }
+        }
+
+        for (int i = 0; i < monstresLaserLances.Count; i++)
+        {
+            if (monstresLaserLances[i].GetEtatMonstre() == EtatMonstre.ENMARCHE)
+            {
+                monstresLaserLances[i].SetEtatMonstre(EtatMonstre.MORT);
             }
         }
     }

@@ -222,7 +222,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0.4761926, g: 0.8207547, b: 0.7967586, a: 1}
+      maxColor: {r: 0.6886792, g: 0.24408457, b: 0, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -5042,7 +5042,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0, g: 0.55506897, b: 1, a: 0.5019608}
+      maxColor: {r: 1, g: 0.9318118, b: 0, a: 0.5019608}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -9863,7 +9863,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0, g: 0.33085203, b: 1, a: 0.5019608}
+      maxColor: {r: 1, g: 0.44774187, b: 0, a: 0.5019608}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -19389,11 +19389,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0929e1176d6363439dee5969b75434d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dureeDeVie: 3
+  dureeDeVie: 5
   sortTransform: {fileID: 4215891199679236}
   sortRigidbody: {fileID: 54078151922935178}
   sortCollider: {fileID: 135537387491394736}
-  vitesse: 200
+  vitesse: 450
   bouleDeFeu: 0
   bouleDeLaMort: 0
   hadooken: 1
@@ -19620,7 +19620,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0.1745283, g: 0.70743304, b: 1, a: 0.1254902}
+      maxColor: {r: 1, g: 0.69653505, b: 0, a: 0.1254902}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}

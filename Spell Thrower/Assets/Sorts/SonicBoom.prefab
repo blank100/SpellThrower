@@ -4920,11 +4920,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0929e1176d6363439dee5969b75434d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dureeDeVie: 3
+  dureeDeVie: 5
   sortTransform: {fileID: 4245338083937082}
   sortRigidbody: {fileID: 54034537497690522}
   sortCollider: {fileID: 135187156854092900}
-  vitesse: 350
+  vitesse: 600
   bouleDeFeu: 0
   bouleDeLaMort: 1
   hadooken: 0
